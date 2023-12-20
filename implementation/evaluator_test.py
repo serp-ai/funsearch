@@ -18,73 +18,72 @@ import textwrap
 from absl.testing import absltest
 from absl.testing import parameterized
 
-from funsearch.implementation import evaluator
+from implementation import evaluator
 
 
 class EvaluatorTest(parameterized.TestCase):
-
-  def test_trim_function_body_docstring(self):
-    code = '''\
+    def test_trim_function_body_docstring(self):
+        code = '''\
   x = 1
 
   return 0
 """Docstring"""'''
-    desired = '''\
+        desired = """\
   x = 1
 
   return 0
 
-'''
-    actual = evaluator._trim_function_body(code)
-    self.assertEqual(desired, actual)
+"""
+        actual = evaluator._trim_function_body(code)
+        self.assertEqual(desired, actual)
 
-  def test_trim_function_body_function(self):
-    code = '''\
+    def test_trim_function_body_function(self):
+        code = """\
   return 0
-def new_f():'''
-    desired = '''\
+def new_f():"""
+        desired = """\
   return 0
 
-'''
-    actual = evaluator._trim_function_body(code)
-    self.assertEqual(desired, actual)
+"""
+        actual = evaluator._trim_function_body(code)
+        self.assertEqual(desired, actual)
 
-  def test_trim_function_body_empty(self):
-    code = '''  return 0\n'''
-    desired = '''  return 0\n\n'''
-    actual = evaluator._trim_function_body(code)
-    self.assertEqual(desired, actual)
+    def test_trim_function_body_empty(self):
+        code = """  return 0\n"""
+        desired = """  return 0\n\n"""
+        actual = evaluator._trim_function_body(code)
+        self.assertEqual(desired, actual)
 
-  def test_trim_function_indentation_corner_case(self):
-    code = textwrap.dedent(
-        '''\
+    def test_trim_function_indentation_corner_case(self):
+        code = textwrap.dedent(
+            """\
           return (1 +
         2)
-        def unfinished_code('''
-    )
-    desired = textwrap.dedent(
-        '''\
+        def unfinished_code("""
+        )
+        desired = textwrap.dedent(
+            """\
           return (1 +
         2)
 
-        '''
-    )
-    actual = evaluator._trim_function_body(code)
-    self.assertEqual(desired, actual)
+        """
+        )
+        actual = evaluator._trim_function_body(code)
+        self.assertEqual(desired, actual)
 
-  def test_trim_function_backlash_corner_case(self):
-    code = textwrap.dedent(
-        '''\
+    def test_trim_function_backlash_corner_case(self):
+        code = textwrap.dedent(
+            """\
             return score + ((el[0] + 1) * (el[0] + 2) * el[1] / 6 == el[2])\\
          + ((el[0] + 1) * (el[0] + 2) * (el[0] + 3) * el[1] / 24 == el[2])\\
          + ((el[0] + 1) * (el[0] + 2) * el[1] * el[2] / 6 == n)\\
          + ((el[0] + 1) * (el[0] + 2) * el[1] * el[2] / 3 == n + el[0])\\
 
-        '''
-    )
-    actual = evaluator._trim_function_body(code)
-    self.assertEqual(actual, code)
+        """
+        )
+        actual = evaluator._trim_function_body(code)
+        self.assertEqual(actual, code)
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()

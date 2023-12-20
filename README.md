@@ -1,5 +1,17 @@
 # FunSearch
 
+This repository has been updated to include a functioning version of FunSearch that can be run on a local machine (with parallelization).
+
+## Getting started
+- spin up a text completion [vLLM](https://github.com/vllm-project/vllm) server
+- edit the configuration options in `implementation/config.py` to match your setup
+- create your specification using `implementation/specification_nonsymmetric_admissible_set.txt` as a guide
+- edit the main function in `implementation/funsearch.py` to open the correct specification and setup the inputs that will be used to score the generated functions
+- run `python implementation/funsearch.py` to start the search (functions that were generated and scored correctly will be saved in a sqlite database)
+
+
+# Original README
+
 This repository accompanies the publication
 
 > Romera-Paredes, B. et al. [Mathematical discoveries from program search with large language models](https://www.nature.com/articles/s41586-023-06924-6). *Nature* (2023)

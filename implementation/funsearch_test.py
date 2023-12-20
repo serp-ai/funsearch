@@ -16,7 +16,7 @@
 from absl.testing import absltest
 from absl.testing import parameterized
 
-from funsearch.implementation import funsearch
+from implementation import funsearch
 
 _PY_PROMPT = '''\
 import itertools
@@ -38,7 +38,7 @@ def capset(n: int):
   return [[1,] * n]
 '''
 
-_PY_PROMPT_EVOLVE_RUN = '''\
+_PY_PROMPT_EVOLVE_RUN = """\
 import itertools
 
 
@@ -46,7 +46,7 @@ import itertools
 @funsearch.evolve
 def capset(n: int):
   return [[1,] * n]
-'''
+"""
 
 _PY_PROMPT_NO_RUN = '''\
 import itertools
@@ -99,32 +99,34 @@ def capset(n: int):
 
 
 class FunsearchTest(parameterized.TestCase):
+    def test_extract_function_names(self):
+        to_evolve, to_run = funsearch._extract_function_names(_PY_PROMPT)
+        self.assertEqual(to_run, "run")
+        self.assertEqual(to_evolve, "capset")
 
-  def test_extract_function_names(self):
-    to_evolve, to_run = funsearch._extract_function_names(_PY_PROMPT)
-    self.assertEqual(to_run, 'run')
-    self.assertEqual(to_evolve, 'capset')
+    def test_extract_function_names_evolve_and_run(self):
+        to_evolve, to_run = funsearch._extract_function_names(_PY_PROMPT_EVOLVE_RUN)
+        self.assertEqual(to_run, "capset")
+        self.assertEqual(to_evolve, "capset")
 
-  def test_extract_function_names_evolve_and_run(self):
-    to_evolve, to_run = funsearch._extract_function_names(_PY_PROMPT_EVOLVE_RUN)
-    self.assertEqual(to_run, 'capset')
-    self.assertEqual(to_evolve, 'capset')
+    def test_extract_function_names_no_run(self):
+        with self.assertRaisesRegex(
+            ValueError, r"Expected 1 function decorated with `@funsearch.run`."
+        ):
+            funsearch._extract_function_names(_PY_PROMPT_NO_RUN)
 
-  def test_extract_function_names_no_run(self):
-    with self.assertRaisesRegex(
-        ValueError, r'Expected 1 function decorated with `@funsearch.run`.'):
-      funsearch._extract_function_names(_PY_PROMPT_NO_RUN)
+    def test_extract_function_names_no_evolve(self):
+        with self.assertRaisesRegex(
+            ValueError, r"Expected 1 function decorated with `@funsearch.evolve`."
+        ):
+            funsearch._extract_function_names(_PY_PROMPT_NO_EVOLVE)
 
-  def test_extract_function_names_no_evolve(self):
-    with self.assertRaisesRegex(
-        ValueError, r'Expected 1 function decorated with `@funsearch.evolve`.'):
-      funsearch._extract_function_names(_PY_PROMPT_NO_EVOLVE)
-
-  def test_extract_function_names_double_run(self):
-    with self.assertRaisesRegex(
-        ValueError, r'Expected 1 function decorated with `@funsearch.run`.'):
-      funsearch._extract_function_names(_PY_PROMPT_DOUBLE_RUN)
+    def test_extract_function_names_double_run(self):
+        with self.assertRaisesRegex(
+            ValueError, r"Expected 1 function decorated with `@funsearch.run`."
+        ):
+            funsearch._extract_function_names(_PY_PROMPT_DOUBLE_RUN)
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()
